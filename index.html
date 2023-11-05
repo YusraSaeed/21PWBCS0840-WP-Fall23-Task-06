@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<html>
+    <head lang="en">
+        <title>Online Library Management System</title>
+        <meta charset="UTF-8">
+        <meta name="keywords" content="HTML, CSS, JavaScript">
+        <meta name="author" content="Yusra Saeed">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- <link rel="stylesheet" href="style.css"> -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <style>
+            *{
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            }           
+            body{
+                /* background-color: pink !important; */
+                background-image: url("bg.jpg");
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-size: cover;
+            }           
+            h1{         
+                padding: 30px;
+                text-align: center;
+            }           
+            .workspace{
+                margin: 5%;
+                border: 2px solid;
+                box-shadow: 15px 20px 5px 0px #888;
+                background-color: lightcoral; 
+            }           
+            .workspace h2{
+                font-size: 25px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }          
+            .workspace input{
+                margin-top: 10px;
+                margin-bottom: 10px;
+                width: 100%;
+                padding: 10px;
+                border: 2px solid rgb(252, 168, 168);
+                box-shadow: 2px 2px 5px 0px rgb(252, 168, 168);
+            }           
+            #btn{
+                margin-bottom: 15px;
+                background-color: rgb(248, 150, 150);
+                border: 2px solid transparent;
+                border-radius: 30px;
+                padding: 5px 10px;
+                /* box-shadow: 5px 5px 5px 0px rgb(228, 116, 116); */
+            }           
+
+            #btn:hover {
+                background-color: rgb(238, 94, 94);
+            }           
+            #btn:active {
+                background-color: rgb(238, 94, 94);
+                box-shadow: 0 10px #666;
+                transform: translateY(2px);
+            }         
+            #status{
+                font-size: 15px;
+            }       
+            #status2{
+                font-size: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1> Online Library Management System (OLMS)</h1>
+        <!--Workspace-->
+        <section class="workspace">
+            <div class="container">
+                <div class="row">
+                    <!--Displays All Books-->
+                    <div class="col-md-4 col-sm-12" id="side1">
+                        <h2>Book List</h2>
+                        <div id="displayData">
+                            <!--To Display data after running the JavaScript Code-->
+                        </div>
+                    </div>
+                    <!--Add New Books-->
+                    <div class="col-md-4 col-sm-12" id="side2" >
+                        <h2>Add New Book</h2>
+                        <form id="formData">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="bookName" id="bookName" placeholder="Title" required><br>
+                                <input type="text" class="form-control" name="author" id="author" placeholder="Author" required><br>
+                                <input type="text" class="form-control" name="ISBN" id="ISBN" placeholder="ISBN" required>
+                            </div>
+                            <button type="button" class="btn btn-default" id="btn" value="submit" onclick="addBook()">Add Book</button> 
+                        </form>
+                        <div id="status">
+                            <!--displays the status of updation-->
+                        </div>
+                    </div>
+                    <!--Search a Book-->
+                    <div class="col-md-4 col-sm-12" id="side3">
+                        <h2>Search a Book</h2>
+                        <form id="formData">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="bookName" id="bName" placeholder="Search by keyword or Title"required><br>
+                            </div>
+                            <button type="button" class="btn btn-default" id="btn" value="submit" onclick="searchBook()">Search</button> 
+                        </form>
+                        <div id="status2">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--JavaScript-->
+        <script>
+            const books = []; //Array to store books
+            let count=0;
+            function addInitialBooks() {
+                const resultDiv = document.getElementById("displayData");
+                const initialBooks = [
+                {
+                    name: "Hacking: The Art of Exploitation",
+                    author: "Jon Erickson",
+                    isbn: "978-1593271442"},
+                {
+                    name: "Introduction to the Theory of Computing",
+                    author: "Michael Sipser",
+                    isbn: "978-1133187790"},
+                {
+                    name: "Eloquent JavaScript: A Modern Introduction to Programming",
+                    author: "Marjin Haverbeke",
+                    isbn: "978-159379509"}
+                ];
+            
+                initialBooks.forEach(book => {
+                    books.push(book);
+                    count++;
+                    resultDiv.innerHTML += `${count}. ${book.name} by ${book.author} ISBN: ${book.isbn}<br><br>`;
+                });
+            }  
+            addInitialBooks(); 
+
+            //Function for adding books to the array
+            function addBook(){
+                const name=document.getElementById("bookName").value;
+                const author=document.getElementById("author").value;
+                const ISBN=document.getElementById("ISBN").value;
+
+                if (name === "" || author === "" || ISBN === "") {
+                    // Display an error message or handle it as needed
+                    const statusDiv = document.getElementById("status");
+                    statusDiv.innerHTML = 'Please fill in all fields.';
+                    return;
+                }
+
+                //checking if the book already exists
+                let bookExists=false;
+                for (let i = 0; i < books.length; i++) {
+                    if (name === books[i].name) {
+                        bookExists = true;
+                        break;
+                    }
+                }
+
+                //pushing data into array and displaying status of the entry
+                if(bookExists == false){
+                    const bookData = {
+                    name:name,
+                    author:author,
+                    isbn:ISBN
+                    };
+                    
+                    books.push(bookData);
+                    const resultDiv = document.getElementById("displayData");
+                    count++;
+                    resultDiv.innerHTML += `${count}. ${bookData.name} by ${bookData.author} ISBN: ${bookData.isbn}<br><br>`;
+                    
+                    //Displaying the status of the entered book
+                    const statusDiv = document.getElementById("status");
+                    statusDiv.innerHTML = 'Book Added!';
+                }
+                else {
+                    // If the book already exists
+                    const statusDiv = document.getElementById("status");
+                    statusDiv.innerHTML = 'Book Already Exists!';
+                }
+                //clearing out the form data
+                document.getElementById("bookName").value = ""; 
+                document.getElementById("author").value = "";
+                document.getElementById("ISBN").value = "";
+            }
+        
+            // //Function to Search Book        
+            function searchBook() {
+                const searched = document.getElementById("bName").value.trim().toLowerCase();
+                const statusDiv2 = document.getElementById("status2");
+                let results = [];
+
+                //If No Input is Given
+                if (searched === "") {
+                    statusDiv2.innerHTML = 'Please fill in the search field.';
+                    return;
+                }
+
+                //Checks for Entered Keywords
+                for (let i = 0; i < books.length; i++) {
+                    const bookName = books[i].name.toLowerCase();
+                        if (bookName.includes(searched)) {
+                        results.push(books[i]);
+                    }
+                }
+
+                if (results.length > 0) {
+                    statusDiv2.innerHTML = 'Books Found:<br>';
+                    results.forEach((book, index) => {
+                    statusDiv2.innerHTML += `${book.name} by ${book.author} ISBN: ${book.isbn}<br><br>`;
+                    });
+                } 
+                else {
+                    statusDiv2.innerHTML = 'No books found with the given keyword.';
+                }
+
+                // Clearing out the form data
+                document.getElementById("bName").value = "";
+            }      
+        </script>
+    </body>
+</html>
